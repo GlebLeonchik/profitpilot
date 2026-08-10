@@ -153,7 +153,7 @@
         <p>Эти данные задаются один раз владельцем ProfitPilot. Продавцы затем подключаются безопасно через OAuth.</p>
         <label class="form-field"><span>Client ID</span><input name="clientId" autocomplete="off" required placeholder="Client ID приложения Allegro" /></label>
         <label class="form-field"><span>Client Secret</span><input name="clientSecret" type="password" autocomplete="new-password" required placeholder="Client Secret" /></label>
-        <label class="form-field"><span>Сгенерированный User-Agent</span><input name="userAgent" autocomplete="off" required placeholder="ProfitPilot/0.3.0 (+https://example.com/profitpilot)" /></label>
+        <label class="form-field"><span>Сгенерированный User-Agent</span><input name="userAgent" autocomplete="off" required value="ProfitPilot/0.3.0 (+https://github.com/GlebLeonchik/profitpilot)" /></label>
         <label class="form-field"><span>Среда</span><select name="environment"><option value="production">Production</option><option value="sandbox">Sandbox</option></select></label>
         <div class="redirect-box"><span>Redirect URI для приложения</span><code id="allegroRedirectUri">http://localhost:8080/api/auth/allegro/callback</code><button type="button" id="copyRedirect">Копировать</button></div>
         <p class="form-help">Создайте приложение на <a href="https://apps.developer.allegro.pl/" target="_blank" rel="noreferrer">Allegro Developer Apps</a>, добавьте Redirect URI и сгенерируйте <a href="https://apps.developer.allegro.pl/user-agent" target="_blank" rel="noreferrer">User-Agent</a>.</p>
