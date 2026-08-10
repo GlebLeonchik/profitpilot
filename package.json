@@ -1,0 +1,15 @@
+{
+  "name": "profitpilot",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Profit Manager for Allegro and Empik sellers",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node --experimental-sqlite server.mjs",
+    "dev": "node --experimental-sqlite --watch server.mjs",
+    "check": "node --check server.mjs && node --check app.js"
+  }
+}

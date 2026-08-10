@@ -1,0 +1,7 @@
+data/
+.runtime/
+node-v*-win-x64.zip
+gh_*_windows_amd64.zip
+.env
+*.log
+.DS_Store

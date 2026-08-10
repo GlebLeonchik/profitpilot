@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ProfitPilot — контроль реальной прибыли продавцов Allegro и Empik." />
+    <title>ProfitPilot — AI Profit Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="ProfitPilot">
+        <span class="brand-mark">P</span>
+        <span>ProfitPilot</span>
+      </a>
+
+      <nav class="nav" aria-label="Основная навигация">
+        <button class="nav-item active" data-view="overview"><span>⌂</span>Обзор</button>
+        <button class="nav-item" data-view="products"><span>▦</span>Товары</button>
+        <button class="nav-item" data-view="recommendations"><span>✦</span>Рекомендации <b id="navAlertCount">0</b></button>
+        <button class="nav-item" data-view="integrations"><span>↔</span>Интеграции <b id="navIntegrationCount">0</b></button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="integration-status" id="integrationStatus">
+          <span class="status-dot" id="integrationDot"></span>
+          <div><strong id="integrationTitle">Проверка сервера…</strong><small id="integrationText">Подождите несколько секунд</small></div>
+        </div>
+        <button id="openIntegrations" class="connect-button">Настроить интеграции</button>
+        <button id="resetDemo" class="nav-item subtle"><span>↻</span>Сбросить демо</button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">AI PROFIT MANAGER</p>
+          <h1 id="pageTitle">Доброе утро, Лео</h1>
+          <p id="pageSubtitle">Вот что происходит с прибылью вашего магазина.</p>
+        </div>
+        <div class="topbar-actions">
+          <label class="date-filter">Период
+            <select id="periodSelect">
+              <option value="30">Последние 30 дней</option>
+              <option value="7">Последние 7 дней</option>
+              <option value="90">Последние 90 дней</option>
+            </select>
+          </label>
+          <button id="importButton" class="primary-button">＋ Импорт CSV</button>
+          <input id="csvInput" type="file" accept=".csv,text/csv" hidden />
+        </div>
+      </header>
+
+      <section id="overviewView" class="view active">
+        <div class="metrics" id="metrics"></div>
+
+        <div class="content-grid">
+          <section class="panel chart-panel">
+            <div class="panel-header">
+              <div><p class="panel-kicker">ДИНАМИКА</p><h2>Выручка и прибыль</h2></div>
+              <div class="legend"><span><i class="revenue"></i>Выручка</span><span><i class="profit"></i>Прибыль</span></div>
+            </div>
+            <div id="profitChart" class="chart" aria-label="График выручки и прибыли"></div>
+          </section>
+
+          <section class="panel health-panel">
+            <div class="panel-header"><div><p class="panel-kicker">ЗДОРОВЬЕ БИЗНЕСА</p><h2>Структура каталога</h2></div></div>
+            <div id="healthChart" class="health-chart"></div>
+            <div id="healthLegend" class="health-legend"></div>
+          </section>
+        </div>
+
+        <section class="panel attention-panel">
+          <div class="panel-header">
+            <div><p class="panel-kicker">ТРЕБУЮТ ВНИМАНИЯ</p><h2>Где вы теряете деньги</h2></div>
+            <button class="text-button" data-go="recommendations">Все рекомендации →</button>
+          </div>
+          <div id="topRecommendations" class="recommendation-list"></div>
+        </section>
+      </section>
+
+      <section id="productsView" class="view">
+        <section class="panel table-panel">
+          <div class="table-toolbar">
+            <label class="search-box">⌕<input id="productSearch" type="search" placeholder="Поиск по товару или SKU" /></label>
+            <select id="channelFilter"><option value="all">Все каналы</option><option value="Allegro">Allegro</option><option value="Empik">Empik</option></select>
+            <button id="downloadTemplate" class="secondary-button">Скачать шаблон CSV</button>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Товар</th><th>Канал</th><th>Продажи</th><th>Выручка</th><th>Расходы</th><th>Прибыль</th><th>Маржа</th><th>Статус</th></tr></thead>
+              <tbody id="productsTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section id="recommendationsView" class="view">
+        <div class="recommendation-hero">
+          <div><p class="panel-kicker">PROFIT AI</p><h2 id="recommendationHeadline">Нашли возможности роста</h2><p>Рекомендации рассчитаны из фактической экономики каждого SKU.</p></div>
+          <div class="potential"><span>Потенциал в месяц</span><strong id="totalPotential">0 zł</strong></div>
+        </div>
+        <div id="allRecommendations" class="recommendation-grid"></div>
+      </section>
+
+      <section id="integrationsView" class="view">
+        <div class="integration-hero">
+          <div><p class="panel-kicker">MARKETPLACE CONNECTIONS</p><h2>Подключите каналы продаж</h2><p>ProfitPilot получает заказы, комиссии, цены и остатки напрямую из кабинетов продавца.</p></div>
+          <div class="security-note"><span>⌾</span><div><strong>Безопасное подключение</strong><small>Ключи и токены зашифрованы в локальной базе</small></div></div>
+        </div>
+        <div class="integration-grid">
+          <article class="marketplace-card" id="allegroCard">
+            <div class="marketplace-top"><span class="marketplace-logo allegro-logo">a</span><span id="allegroBadge" class="connection-badge">Не подключено</span></div>
+            <h3>Allegro</h3><p>Заказы, офферы, комиссии, возвраты и рекламные данные через официальный REST API.</p>
+            <ul><li>OAuth 2.0 + PKCE</li><li>Автоматическое обновление токена</li><li>Доступ только после вашего согласия</li></ul>
+            <div class="marketplace-account" id="allegroAccount" hidden><small>Подключённый аккаунт</small><strong></strong></div>
+            <div class="marketplace-actions"><button id="allegroPrimary" class="primary-button marketplace-primary">Настроить Allegro</button><button id="allegroDisconnect" class="text-danger" hidden>Отключить</button></div>
+          </article>
+
+          <article class="marketplace-card" id="empikCard">
+            <div class="marketplace-top"><span class="marketplace-logo empik-logo">empik</span><span id="empikBadge" class="connection-badge">Не подключено</span></div>
+            <h3>EmpikPlace</h3><p>Заказы, предложения, цены и остатки через API продавца Empik/Mirakl.</p>
+            <ul><li>Официальный ключ API продавца</li><li>Проверка ключа перед сохранением</li><li>Без передачи пароля от кабинета</li></ul>
+            <div class="marketplace-account" id="empikAccount" hidden><small>Подключённый магазин</small><strong></strong></div>
+            <div class="marketplace-actions"><button id="empikPrimary" class="primary-button marketplace-primary">Подключить Empik</button><button id="empikDisconnect" class="text-danger" hidden>Отключить</button></div>
+          </article>
+        </div>
+        <section class="panel integration-help">
+          <div><p class="panel-kicker">КАК ЭТО РАБОТАЕТ</p><h2>Три шага до первой аналитики</h2></div>
+          <ol><li><b>01</b><span><strong>Подключите площадку</strong><small>Авторизуйтесь в Allegro или вставьте ключ Empik.</small></span></li><li><b>02</b><span><strong>Загрузите себестоимость</strong><small>Импортируйте закупочные цены по SKU через CSV.</small></span></li><li><b>03</b><span><strong>Получите рекомендации</strong><small>Profit AI найдёт потери и рассчитает действия.</small></span></li></ol>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="importDialog">
+      <form method="dialog" class="dialog-card">
+        <button class="dialog-close" value="cancel" aria-label="Закрыть">×</button>
+        <span class="dialog-icon">⇧</span>
+        <h2>Импорт данных продаж</h2>
+        <p>Загрузите CSV по нашему шаблону. Файл обрабатывается только в вашем браузере.</p>
+        <div id="dropZone" class="drop-zone">
+          <strong>Перетащите CSV сюда</strong><span>или нажмите, чтобы выбрать файл</span>
+        </div>
+        <p class="dialog-hint">Обязательные поля: sku, name, channel, units, price, cost, commission, ads, shipping, returns</p>
+      </form>
+    </dialog>
+
+    <dialog id="allegroDialog">
+      <form id="allegroForm" class="dialog-card integration-dialog">
+        <button type="button" class="dialog-close" data-close="allegroDialog" aria-label="Закрыть">×</button>
+        <span class="marketplace-logo allegro-logo dialog-market-logo">a</span>
+        <h2>Настройка приложения Allegro</h2>
+        <p>Эти данные задаются один раз владельцем ProfitPilot. Продавцы затем подключаются безопасно через OAuth.</p>
+        <label class="form-field"><span>Client ID</span><input name="clientId" autocomplete="off" required placeholder="Client ID приложения Allegro" /></label>
+        <label class="form-field"><span>Client Secret</span><input name="clientSecret" type="password" autocomplete="new-password" required placeholder="Client Secret" /></label>
+        <label class="form-field"><span>Сгенерированный User-Agent</span><input name="userAgent" autocomplete="off" required placeholder="ProfitPilot/0.3.0 (+https://example.com/profitpilot)" /></label>
+        <label class="form-field"><span>Среда</span><select name="environment"><option value="production">Production</option><option value="sandbox">Sandbox</option></select></label>
+        <div class="redirect-box"><span>Redirect URI для приложения</span><code id="allegroRedirectUri">http://localhost:8080/api/auth/allegro/callback</code><button type="button" id="copyRedirect">Копировать</button></div>
+        <p class="form-help">Создайте приложение на <a href="https://apps.developer.allegro.pl/" target="_blank" rel="noreferrer">Allegro Developer Apps</a>, добавьте Redirect URI и сгенерируйте <a href="https://apps.developer.allegro.pl/user-agent" target="_blank" rel="noreferrer">User-Agent</a>.</p>
+        <button type="submit" class="primary-button dialog-submit">Сохранить и перейти к подключению</button>
+      </form>
+    </dialog>
+
+    <dialog id="empikDialog">
+      <form id="empikForm" class="dialog-card integration-dialog">
+        <button type="button" class="dialog-close" data-close="empikDialog" aria-label="Закрыть">×</button>
+        <span class="marketplace-logo empik-logo dialog-market-logo">empik</span>
+        <h2>Подключение EmpikPlace</h2>
+        <p>Скопируйте ключ из Panel Sprzedawcy → Ustawienia osobiste → Klucz API.</p>
+        <label class="form-field"><span>Название магазина</span><input name="accountName" placeholder="Например, Основной магазин" /></label>
+        <label class="form-field"><span>Ключ API Empik</span><input name="apiKey" type="password" autocomplete="new-password" required placeholder="Вставьте ключ API" /></label>
+        <div class="privacy-line"><span>✓</span>Пароль от Empik не требуется. Ключ будет проверен и зашифрован.</div>
+        <p class="form-help"><a href="https://www.pomoc.empikplace.com/portal/pl/kb/articles/jak-wygenerowa%C4%87-klucz-api" target="_blank" rel="noreferrer">Где получить ключ API?</a></p>
+        <button type="submit" class="primary-button dialog-submit">Проверить и подключить</button>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status"></div>
+    <script src="app.js?v=4"></script>
+  </body>
+</html>
