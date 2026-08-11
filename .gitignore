@@ -1,4 +1,5 @@
 data/
+.merge-backup/
 .runtime/
 node-v*-win-x64.zip
 gh_*_windows_amd64.zip
